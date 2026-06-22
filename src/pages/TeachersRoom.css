@@ -1,0 +1,114 @@
+.teachers-room-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.teachers-header-title {
+  margin-bottom: 8px;
+}
+
+/* Teachers Grid */
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.teacher-card {
+  background-color: var(--bg-color);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.teacher-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(0, 82, 204, 0.2);
+}
+
+.teacher-header-img-wrapper {
+  position: relative;
+  height: 200px;
+  background-color: var(--primary-light);
+  overflow: hidden;
+}
+
+.teacher-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.teacher-card:hover .teacher-photo {
+  transform: scale(1.05);
+}
+
+.teacher-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.teacher-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.teacher-subject-tag {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.teacher-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  padding: 8px 0;
+}
+
+.t-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-filled {
+  color: #fbbf24;
+  fill: #fbbf24;
+}
+
+.teacher-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.teacher-footer-action {
+  padding: 0 20px 20px;
+}
+
+.teacher-contact-btn {
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  padding: 10px;
+}

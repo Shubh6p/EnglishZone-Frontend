@@ -1,0 +1,107 @@
+.payroll-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.payroll-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .payroll-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payroll-breakdown-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.salary-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.95rem;
+}
+
+.salary-row-item:last-child {
+  border-bottom: none;
+}
+
+.salary-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.salary-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.deduction-val {
+  color: var(--error-color);
+  font-weight: 700;
+}
+
+.net-payout-highlight-card {
+  background-color: var(--primary-light);
+  border: 1.5px solid rgba(0, 82, 204, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+  gap: 14px;
+}
+
+.net-payout-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.net-payout-amount {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.payout-status-badge {
+  padding: 6px 16px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-paid {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-processing {
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+}
+
+.download-slip-row {
+  margin-top: 10px;
+  width: 100%;
+}

@@ -1,0 +1,393 @@
+.dash-home-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dash-card {
+  background: var(--bg-color);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  padding: 28px;
+  transition: all var(--transition-fast);
+}
+
+.dash-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-heading-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.card-heading-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* 1. Profile Summary Card */
+.profile-summary-flex {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.avatar-frame-large {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  padding: 4px;
+  border: 3px solid var(--primary-color);
+}
+
+.profile-photo-large {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--success-color);
+  color: var(--text-white);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-text-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-pill-grade {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+.student-name-heading {
+  font-size: 1.6rem;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.student-meta-item {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.student-meta-item strong {
+  color: var(--text-primary);
+}
+
+.profile-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.q-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.border-l {
+  border-left: 1px solid var(--border-light);
+}
+
+.q-stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.q-stat-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 2. Attendance Meter Card */
+.attendance-flex-container {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-top: 20px;
+}
+
+.radial-progress-svg-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.radial-svg {
+  transform: rotate(-90deg);
+}
+
+.radial-bg-circle {
+  fill: none;
+  stroke: var(--border-light);
+}
+
+.radial-progress-circle {
+  fill: none;
+  stroke: var(--primary-color);
+  stroke-dasharray: 376.99;
+  transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.radial-percentage-overlay {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-percentage-text {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.radial-sub-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.attendance-details-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attendance-status-heading {
+  font-size: 1.1rem;
+}
+
+.gap-6 {
+  gap: 6px;
+}
+
+.attendance-summary-para {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.attendance-bar-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.bg-muted {
+  background-color: var(--border-color);
+}
+
+/* 3. Lectures & Schedule Card */
+.schedule-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.select-label-hide {
+  display: none;
+}
+
+.schedule-day-select {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--primary-color);
+  background-color: var(--bg-color);
+  color: var(--primary-color);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.no-lectures-scheduled {
+  text-align: center;
+  padding: 40px 10px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.schedule-timeline-list {
+  display: flex;
+  flex-direction: column;
+  padding-left: 8px;
+}
+
+.timeline-schedule-item {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.timeline-hour-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 75px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.timeline-indicator-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 14px;
+}
+
+.timeline-dot-accent {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  border: 2px solid var(--bg-color);
+  box-shadow: 0 0 0 2px var(--accent-color);
+  z-index: 2;
+  margin-top: 8px;
+}
+
+.timeline-connector-bar {
+  position: absolute;
+  top: 18px;
+  bottom: -18px;
+  width: 3px;
+  background-color: var(--border-light);
+  z-index: 1;
+}
+
+.timeline-card-content {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  flex: 1;
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-fast);
+}
+
+.timeline-card-content:hover {
+  background-color: var(--bg-color);
+  border-color: rgba(255, 107, 0, 0.2);
+}
+
+.schedule-item-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.schedule-subject-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.schedule-room-no {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: rgba(0, 82, 204, 0.08);
+  color: var(--primary-color);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.schedule-teacher-name {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.schedule-teacher-name strong {
+  color: var(--text-primary);
+}
+
+.schedule-duration-txt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Responsive Dash Elements */
+@media (max-width: 768px) {
+  .profile-summary-flex {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  .profile-text-summary {
+    align-items: center;
+  }
+  .attendance-flex-container {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  .timeline-hour-badge {
+    display: none;
+  }
+  .timeline-schedule-item {
+    gap: 8px;
+  }
+}

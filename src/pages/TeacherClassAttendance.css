@@ -1,0 +1,206 @@
+.attendance-manager-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.attendance-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.attendance-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-primary-light {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.bg-success-light {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.bg-error-light {
+  background-color: var(--error-bg);
+  color: var(--error-color);
+}
+
+.stat-info h5 {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.stat-info p {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.attendance-table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.attendance-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+@media (max-width: 600px) {
+  .attendance-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+.attendance-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.attendance-table th {
+  padding: 16px 28px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 1.5px solid var(--border-light);
+  background-color: var(--bg-secondary);
+  text-transform: uppercase;
+}
+
+.attendance-table td {
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.student-row-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--border-light);
+}
+
+.student-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.toggle-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.switch-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: 65px;
+}
+
+.switch-label.present {
+  color: var(--success-color);
+}
+
+.switch-label.absent {
+  color: var(--error-color);
+}
+
+/* Custom Switch Toggle styling */
+.switch-input-hidden {
+  display: none;
+}
+
+.switch-slider-track {
+  width: 50px;
+  height: 26px;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.switch-slider-track.active {
+  background-color: var(--success-color);
+}
+
+.switch-slider-track:not(.active) {
+  background-color: var(--error-color);
+}
+
+.switch-slider-thumb {
+  width: 20px;
+  height: 20px;
+  background-color: var(--bg-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.switch-slider-track.active .switch-slider-thumb {
+  transform: translateX(24px);
+}
+
+.action-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 24px 28px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
+}
+
+.alert-toast {
+  background-color: var(--success-bg);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--success-color);
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: scaleUp var(--transition-fast);
+}

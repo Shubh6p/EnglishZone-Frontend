@@ -1,0 +1,373 @@
+.dashboard-layout-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-secondary);
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  height: 72px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.dash-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mobile-hamburger-btn {
+  background: none;
+  border: none;
+  color: var(--text-white);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-white);
+}
+
+.dash-logo-icon {
+  color: var(--accent-color);
+  fill: rgba(255, 107, 0, 0.2);
+}
+
+.dash-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dash-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-icon-badge-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.header-icon-badge-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+}
+
+.badge-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  border: 1.5px solid var(--primary-color);
+}
+
+.kebab-menu-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.kebab-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+}
+
+/* Dropdown Container */
+.dropdown-container {
+  position: relative;
+}
+
+.avatar-profile-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 14px 6px 6px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.avatar-profile-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.avatar-header-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--accent-color);
+}
+
+.avatar-user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.chevron-trans {
+  transition: transform var(--transition-fast);
+}
+
+.chevron-trans.rotate {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu Styles */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 120;
+  width: 280px;
+  overflow: hidden;
+  animation: scaleUp var(--transition-fast);
+}
+
+.kebab-dropdown {
+  width: 220px;
+  top: 48px;
+}
+
+.dropdown-section-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 16px 6px;
+  letter-spacing: 0.05em;
+}
+
+.profile-dropdown {
+  width: 320px;
+}
+
+.profile-drop-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.profile-drop-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.profile-drop-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profile-drop-sub {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-light);
+}
+
+.profile-drop-details {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--bg-secondary);
+}
+
+.profile-detail-line {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.profile-detail-line strong {
+  color: var(--text-primary);
+  display: inline-block;
+  width: 60px;
+}
+
+.dropdown-item-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.dropdown-item-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--primary-color);
+}
+
+.dropdown-item-btn.item-logout {
+  color: var(--error-color);
+}
+
+.dropdown-item-btn.item-logout:hover {
+  background-color: var(--error-bg);
+}
+
+/* Dashboard Split Grid */
+.dashboard-main-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.dashboard-content-workspace {
+  flex: 1;
+  padding: 32px;
+  max-height: calc(100vh - 72px);
+  overflow-y: auto;
+}
+
+.sidebar-overlay-bg {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+}
+
+/* Simulation Notifications list */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.notification-card-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-color);
+  transition: all var(--transition-fast);
+}
+
+.notification-card-item.unread {
+  border-left: 4px solid var(--accent-color);
+  background-color: var(--accent-light);
+}
+
+.notif-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  color: var(--text-white);
+  height: fit-content;
+}
+
+.bg-primary { background-color: var(--primary-color); }
+.bg-accent { background-color: var(--accent-color); }
+.bg-success { background-color: var(--success-color); }
+
+.notif-text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notif-text-content h4 {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.notif-text-content p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.notif-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}
+.gap-8 {
+  gap: 8px;
+}
+
+@media (max-width: 992px) {
+  .mobile-hamburger-btn {
+    display: flex;
+  }
+  .dashboard-content-workspace {
+    padding: 20px 16px;
+  }
+  .avatar-user-name {
+    display: none; /* Hide name on small headers */
+  }
+}

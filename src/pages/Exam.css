@@ -1,0 +1,378 @@
+.exam-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.exam-header-title {
+  margin-bottom: 8px;
+}
+
+/* Tabs Navigation Row */
+.exam-tabs-row {
+  display: flex;
+  border-bottom: 2px solid var(--border-light);
+  gap: 8px;
+}
+
+.exam-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.exam-tab-btn:hover {
+  color: var(--primary-color);
+}
+
+.exam-tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: transparent;
+  transition: background-color var(--transition-fast);
+}
+
+.exam-tab-btn.active {
+  color: var(--primary-color);
+}
+
+.exam-tab-btn.active::after {
+  background-color: var(--primary-color);
+}
+
+/* Previous Results Table */
+.table-responsive-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  padding: 0;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.results-table th {
+  background-color: var(--bg-secondary);
+  padding: 16px 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 1.5px solid var(--border-light);
+  font-family: var(--font-display);
+}
+
+.results-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.results-table tr:last-child td {
+  border-bottom: none;
+}
+
+.results-table tr:hover td {
+  background-color: var(--bg-secondary);
+}
+
+.subject-cell {
+  color: var(--text-primary);
+}
+
+.marks-cell {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.grade-chip {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.grade-a {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.grade-b {
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Upcoming Exams Timeline */
+.exam-timeline {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.exam-timeline-item {
+  display: flex;
+  gap: 20px;
+}
+
+.timeline-date-side {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+  text-align: right;
+  flex-shrink: 0;
+  margin-top: 16px;
+}
+
+.exam-date-str {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.exam-day-str {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.timeline-connector-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16px;
+  position: relative;
+}
+
+.timeline-bullet-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  border: 3px solid var(--bg-color);
+  box-shadow: 0 0 0 2px var(--accent-color);
+  z-index: 2;
+  margin-top: 20px;
+}
+
+.timeline-join-bar {
+  position: absolute;
+  top: 30px;
+  bottom: -30px;
+  width: 3px;
+  background-color: var(--border-light);
+  z-index: 1;
+}
+
+.timeline-detail-card {
+  flex: 1;
+  margin-bottom: 32px;
+}
+
+.exam-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.exam-type-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.exam-time-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.exam-subject-heading {
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.exam-syllabus-btn {
+  align-self: flex-start;
+}
+
+/* Admit Cards Download */
+.admit-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.admit-card-item {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  gap: 24px;
+}
+
+.admit-left-icon {
+  background-color: var(--primary-light);
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admit-middle-content {
+  flex: 1;
+}
+
+.admit-exam-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.admit-release-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.admit-right-action {
+  flex-shrink: 0;
+}
+
+.admit-dl-btn {
+  border-radius: var(--radius-sm);
+}
+
+/* Syllabus Modal Inner Elements */
+.syllabus-topics-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.syllabus-topics-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 6px;
+}
+
+.syllabus-topics-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topic-bullet-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.bullet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+}
+
+.syllabus-warning-box {
+  background-color: var(--primary-light);
+  border: 1px solid rgba(0, 82, 204, 0.15);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.syllabus-warning-box p {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .exam-tab-btn {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+  
+  .timeline-date-side {
+    width: auto;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+  
+  .exam-timeline-item {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .timeline-connector-col {
+    display: none; /* Hide timeline line on mobile */
+  }
+  
+  .timeline-detail-card {
+    margin-bottom: 24px;
+  }
+  
+  .admit-card-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .admit-right-action {
+    width: 100%;
+  }
+  
+  .admit-dl-btn {
+    width: 100%;
+  }
+}

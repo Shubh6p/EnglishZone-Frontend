@@ -1,0 +1,234 @@
+.landing-page-wrapper {
+  background-color: var(--bg-color);
+}
+
+/* Hero Section */
+.hero-section {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.hero-container-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.hero-left-box {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  padding: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-pill {
+  align-self: flex-start;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-main-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-white);
+}
+
+.hero-description-text {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-feat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.feat-icon {
+  color: var(--accent-color);
+}
+
+.hero-right-slider {
+  width: 100%;
+}
+
+/* CTA Action Row */
+.cta-action-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.cta-booking-btn {
+  padding: 16px 36px;
+  border-radius: var(--radius-lg);
+  font-size: 1.15rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.35);
+}
+
+/* Achievements Section */
+.achievements-section {
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 0 24px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  margin-top: 4px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.title-divider {
+  width: 60px;
+  height: 4px;
+  background-color: var(--primary-color);
+  margin: 16px auto 0;
+  border-radius: 2px;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.achievement-card {
+  background-color: var(--bg-color);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.achievement-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(0, 82, 204, 0.2);
+}
+
+.ach-badge-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+}
+
+.ach-student-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.ach-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.ach-student-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ach-student-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ach-student-class {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.ach-title-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1.3;
+}
+
+.ach-detail-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Responsive Grid and Box Styling */
+@media (max-width: 992px) {
+  .hero-container-split {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .hero-left-box {
+    padding: 32px;
+  }
+  .hero-main-title {
+    font-size: 2.2rem;
+  }
+  .section-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-left-box {
+    padding: 20px;
+  }
+  .hero-main-title {
+    font-size: 1.8rem;
+  }
+  .cta-booking-btn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+}

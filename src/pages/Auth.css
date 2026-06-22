@@ -1,0 +1,277 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+  background-image: radial-gradient(circle at 10% 20%, rgba(0, 82, 204, 0.05) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(255, 107, 0, 0.04) 0%, transparent 45%);
+  padding: 24px;
+}
+
+.auth-card {
+  background-color: var(--bg-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
+  width: 100%;
+  max-width: 460px;
+  padding: 40px;
+}
+
+.otp-card-width {
+  max-width: 420px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: var(--primary-color);
+}
+
+.auth-logo .brand-name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.block-contact {
+  display: block;
+  margin-top: 4px;
+  color: var(--primary-color);
+}
+
+.auth-error-msg {
+  background-color: var(--error-bg);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  animation: scaleUp var(--transition-fast);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-field-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-muted);
+}
+
+.auth-input {
+  width: 100%;
+  padding-left: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+}
+
+.auth-btn {
+  height: 48px;
+  border-radius: var(--radius-md);
+  margin-top: 8px;
+}
+
+/* OTP Passcode Blocks */
+.otp-input-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+
+.otp-box {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  transition: all var(--transition-fast);
+}
+
+.otp-box:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+}
+
+.otp-timer-row {
+  text-align: center;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+
+.otp-timer-text span {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+.otp-resend-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.otp-resend-btn:hover {
+  color: var(--primary-dark);
+}
+
+/* Demo Credentials Box */
+.demo-credentials-box {
+  background-color: var(--primary-light);
+  border: 1.5px dashed rgba(0, 82, 204, 0.3);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.demo-info {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.demo-login-btn {
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-color);
+  border: 1.5px solid var(--primary-color);
+  font-size: 0.85rem;
+}
+
+.demo-login-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--text-white);
+}
+
+/* Auth Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.auth-link {
+  color: var(--accent-color);
+  font-weight: 700;
+  transition: color var(--transition-fast);
+}
+
+.auth-link:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+.auth-link-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.auth-link-back:hover {
+  color: var(--primary-color);
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px 16px;
+  }
+  .otp-box {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+}
+
+/* Tabs for Student/Teacher login */
+.role-tabs {
+  display: flex;
+  background-color: var(--bg-tertiary);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light);
+}
+
+.role-tab {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.role-tab.active {
+  background-color: var(--bg-color);
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.role-tab:hover:not(.active) {
+  color: var(--text-primary);
+  background-color: rgba(15, 23, 42, 0.05);
+}
