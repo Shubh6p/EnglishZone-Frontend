@@ -1,43 +1,73 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { Users, UserPlus, ShieldAlert, CheckCircle, Search, Trash2, Edit2, X, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, UserPlus, ShieldAlert, CheckCircle, Search, Trash2, Edit2, X, Plus, Loader2 } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
 import './AdminUserManagement.css';
 
 const AdminUserManagement = () => {
-  const { usersDirectory, addUserProfile, toggleUserStatus } = useContext(AppContext);
-  const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'Student', 'Teacher', 'Parent'
+  const { request, loading } = useApi();
+  const [usersDirectory, setUsersDirectory] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'STUDENT', 'TEACHER', 'PARENT'
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   
   // Modal form states
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
-  const [newRole, setNewRole] = useState('Student');
+  const [newRole, setNewRole] = useState('STUDENT');
+
+  const fetchUsers = async () => {
+    try {
+      const data = await request('/users', 'GET');
+      setUsersDirectory(data);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const toggleUserStatus = async (userId, currentStatus) => {
+    try {
+      await request(`/users/${userId}/status`, 'PUT', { isActive: !currentStatus });
+      // Refresh user list
+      fetchUsers();
+    } catch (err) {
+      console.error('Failed to toggle status:', err);
+    }
+  };
 
   // Handle new user additions
-  const handleAddSubmit = (e) => {
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
     if (!newName || !newEmail) return;
     
-    addUserProfile({
-      name: newName,
-      email: newEmail,
-      role: newRole
-    });
+    try {
+      await request('/auth/signup', 'POST', {
+        fullName: newName,
+        email: newEmail,
+        role: newRole,
+        password: 'password123' // default password for admin created accounts
+      });
 
-    // Reset Form & Close Modal
-    setNewName('');
-    setNewEmail('');
-    setNewRole('Student');
-    setShowAddModal(false);
+      // Refresh list & Close Modal
+      fetchUsers();
+      setNewName('');
+      setNewEmail('');
+      setNewRole('STUDENT');
+      setShowAddModal(false);
+    } catch (err) {
+      console.error('Failed to add user:', err);
+    }
   };
 
   // Filter lists based on role and search query
   const filteredUsers = usersDirectory.filter(u => {
     const matchesFilter = activeFilter === 'All' || u.role === activeFilter;
-    const matchesQuery = u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         u.email.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesQuery;
+    const nameMatch = u.fullName ? u.fullName.toLowerCase().includes(searchQuery.toLowerCase()) : false;
+    const emailMatch = u.email ? u.email.toLowerCase().includes(searchQuery.toLowerCase()) : false;
+    return matchesFilter && (nameMatch || emailMatch);
   });
 
   return (
@@ -51,14 +81,14 @@ const AdminUserManagement = () => {
       {/* Toolbar / Filters Row */}
       <div className="filters-row">
         <div className="filter-tabs">
-          {['All', 'Student', 'Teacher', 'Parent'].map((role) => (
+          {['All', 'STUDENT', 'TEACHER', 'PARENT', 'ADMIN'].map((role) => (
             <button
               key={role}
               type="button"
               className={`filter-tab-btn ${activeFilter === role ? 'active' : ''}`}
               onClick={() => setActiveFilter(role)}
             >
-              {role}s
+              {role === 'All' ? 'All Users' : role}
             </button>
           ))}
         </div>
@@ -104,7 +134,6 @@ const AdminUserManagement = () => {
           <table className="attendance-table">
             <thead>
               <tr>
-                <th>User ID</th>
                 <th>Name</th>
                 <th>Email Address</th>
                 <th>User Role</th>
@@ -113,31 +142,36 @@ const AdminUserManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length === 0 ? (
+              {loading && usersDirectory.length === 0 ? (
+                 <tr>
+                   <td colSpan="5" style={{ textAlign: 'center', padding: '24px' }}>
+                     <Loader2 className="animate-spin text-primary" size={24} style={{ margin: '0 auto' }}/>
+                   </td>
+                 </tr>
+              ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>
+                  <td colSpan="5" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>
                     No users match your query or filter tags.
                   </td>
                 </tr>
               ) : (
                 filteredUsers.map((item) => {
-                  const isActive = item.status === 'Active';
+                  const isActive = item.isActive;
                   return (
-                    <tr key={item.id}>
-                      <td style={{ fontWeight: '700', color: 'var(--text-secondary)' }}>EZ-USR-{item.id.toString().padStart(3, '0')}</td>
-                      <td style={{ fontWeight: '700' }}>{item.name}</td>
+                    <tr key={item._id}>
+                      <td style={{ fontWeight: '700' }}>{item.fullName}</td>
                       <td>{item.email}</td>
                       <td>
                         <span className="profile-pill-grade" style={{ 
-                          backgroundColor: item.role === 'Teacher' ? 'var(--primary-light)' : item.role === 'Student' ? 'var(--accent-light)' : 'var(--bg-tertiary)',
-                          color: item.role === 'Teacher' ? 'var(--primary-color)' : item.role === 'Student' ? 'var(--accent-color)' : 'var(--text-secondary)'
+                          backgroundColor: item.role === 'TEACHER' ? 'var(--primary-light)' : item.role === 'STUDENT' ? 'var(--accent-light)' : 'var(--bg-tertiary)',
+                          color: item.role === 'TEACHER' ? 'var(--primary-color)' : item.role === 'STUDENT' ? 'var(--accent-color)' : 'var(--text-secondary)'
                         }}>
                           {item.role}
                         </span>
                       </td>
                       <td>
                         <span className={isActive ? 'status-badge-active' : 'status-badge-suspended'}>
-                          {item.status}
+                          {isActive ? 'Active' : 'Suspended'}
                         </span>
                       </td>
                       <td>
@@ -151,7 +185,7 @@ const AdminUserManagement = () => {
                               backgroundColor: isActive ? 'var(--error-bg)' : 'var(--success-bg)',
                               color: isActive ? 'var(--error-color)' : 'var(--success-color)'
                             }}
-                            onClick={() => toggleUserStatus(item.id)}
+                            onClick={() => toggleUserStatus(item._id, isActive)}
                             title={isActive ? 'Suspend User Access' : 'Activate User Access'}
                           >
                             {isActive ? <ShieldAlert size={14} /> : <CheckCircle size={14} />}
@@ -215,15 +249,16 @@ const AdminUserManagement = () => {
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
                 >
-                  <option value="Student">Student</option>
-                  <option value="Teacher">Teacher</option>
-                  <option value="Parent">Parent</option>
+                  <option value="STUDENT">Student</option>
+                  <option value="TEACHER">Teacher</option>
+                  <option value="PARENT">Parent</option>
+                  <option value="ADMIN">Admin</option>
                 </select>
               </div>
 
-              <button type="submit" className="btn btn-accent auth-btn" style={{ marginTop: '8px' }}>
-                <Plus size={16} />
-                <span>Publish Profile</span>
+              <button type="submit" className="btn btn-accent auth-btn" style={{ marginTop: '8px' }} disabled={loading}>
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                <span>{loading ? 'Publishing...' : 'Publish Profile'}</span>
               </button>
             </form>
           </div>

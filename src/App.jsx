@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
 import LandingPage from './pages/LandingPage';
 import SignUpPage from './pages/SignUpPage';
 import OTPPage from './pages/OTPPage';
@@ -29,11 +30,18 @@ import AdminFinancialInvoicing from './pages/admin/AdminFinancialInvoicing';
 import AdminAcademicControl from './pages/admin/AdminAcademicControl';
 import AdminTransitMonitoring from './pages/admin/AdminTransitMonitoring';
 
+// Superadmin Pages
+import SuperadminDashboardLayout from './pages/superadmin/SuperadminDashboardLayout';
+import SuperadminDashboardHome from './pages/superadmin/SuperadminDashboardHome';
+import SuperadminAuditLogs from './pages/superadmin/SuperadminAuditLogs';
+import SuperadminConfig from './pages/superadmin/SuperadminConfig';
+
 function App() {
   return (
-    <AppProvider>
-      <BrowserRouter>
-        <Routes>
+    <AuthProvider>
+      <AppProvider>
+        <BrowserRouter>
+          <Routes>
           {/* Public Landing Page */}
           <Route path="/" element={<LandingPage />} />
 
@@ -71,11 +79,19 @@ function App() {
             <Route path="transit" element={<AdminTransitMonitoring />} />
           </Route>
 
+          {/* Superadmin Dashboard Sub-routes */}
+          <Route path="/superadmin-dashboard" element={<SuperadminDashboardLayout />}>
+            <Route index element={<SuperadminDashboardHome />} />
+            <Route path="logs" element={<SuperadminAuditLogs />} />
+            <Route path="config" element={<SuperadminConfig />} />
+          </Route>
+
           {/* Fallback Catch-All Redirect to Landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </AppProvider>
+      </AppProvider>
+    </AuthProvider>
   );
 }
 

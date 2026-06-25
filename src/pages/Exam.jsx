@@ -1,12 +1,33 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../context/AppContext';
-import { Award, Calendar, FileText, Download, Eye, AlertCircle, Clock, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '../hooks/useApi';
+import { Award, Calendar, FileText, Download, Eye, AlertCircle, Clock, BookOpen, Loader2 } from 'lucide-react';
 import './Exam.css';
 
 const Exam = () => {
-  const { examResults, examSchedule, admitCards } = useContext(AppContext);
-  const [activeTab, setActiveTab] = useState('results');
+  const { request, loading } = useApi();
+  const [activeTab, setActiveTab] = useState('upcoming');
   const [selectedSyllabus, setSelectedSyllabus] = useState(null);
+  
+  const [examSchedule, setExamSchedule] = useState([]);
+
+  // Mocked for now (could be wired later if needed)
+  const examResults = [];
+  const admitCards = [
+    { id: 1, examName: 'Unit Test II - Grade 10', releaseDate: '12 Nov 2024' }
+  ];
+
+  const fetchExams = async () => {
+    try {
+      const data = await request('/exams', 'GET');
+      setExamSchedule(data);
+    } catch (err) {
+      console.error('Failed to fetch exams', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchExams();
+  }, []);
 
   const handleDownloadAdmitCard = (examName) => {
     alert(`Downloading official PDF Admit Card for:\n${examName}\nFormat: PDF\nStatus: Signed`);
@@ -49,30 +70,34 @@ const Exam = () => {
         {activeTab === 'results' && (
           <div className="tab-pane scale-up">
             <div className="table-responsive-wrapper card">
-              <table className="results-table">
-                <thead>
-                  <tr>
-                    <th>Subject Name</th>
-                    <th>Marks Obtained</th>
-                    <th>Grade</th>
-                    <th>Faculty Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {examResults.map((result) => (
-                    <tr key={result.id}>
-                      <td className="subject-cell font-bold">{result.subject}</td>
-                      <td className="marks-cell font-bold text-primary">{result.marks}</td>
-                      <td>
-                        <span className={`grade-chip ${result.grade.startsWith('A') ? 'grade-a' : 'grade-b'}`}>
-                          {result.grade}
-                        </span>
-                      </td>
-                      <td className="remarks-cell text-muted">{result.remarks}</td>
+              {examResults.length === 0 ? (
+                <p style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>No previous results published yet.</p>
+              ) : (
+                <table className="results-table">
+                  <thead>
+                    <tr>
+                      <th>Subject Name</th>
+                      <th>Marks Obtained</th>
+                      <th>Grade</th>
+                      <th>Faculty Remarks</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {examResults.map((result) => (
+                      <tr key={result.id}>
+                        <td className="subject-cell font-bold">{result.subject}</td>
+                        <td className="marks-cell font-bold text-primary">{result.marks}</td>
+                        <td>
+                          <span className={`grade-chip ${result.grade.startsWith('A') ? 'grade-a' : 'grade-b'}`}>
+                            {result.grade}
+                          </span>
+                        </td>
+                        <td className="remarks-cell text-muted">{result.remarks}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         )}
@@ -80,12 +105,17 @@ const Exam = () => {
         {activeTab === 'upcoming' && (
           <div className="tab-pane scale-up">
             <div className="exam-timeline">
-              {examSchedule.map((exam, idx) => (
-                <div key={exam.id} className="exam-timeline-item">
+              {loading && examSchedule.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px' }}>
+                  <Loader2 className="animate-spin text-primary" size={24} style={{ margin: '0 auto' }}/>
+                </div>
+              ) : examSchedule.length === 0 ? (
+                <p style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>No upcoming exams scheduled.</p>
+              ) : examSchedule.map((exam, idx) => (
+                <div key={exam._id} className="exam-timeline-item">
                   <div className="timeline-date-side">
                     <Calendar size={16} className="text-accent" />
-                    <span className="exam-date-str">{exam.date}</span>
-                    <span className="exam-day-str">{exam.day}</span>
+                    <span className="exam-date-str">{new Date(exam.date).toLocaleDateString()}</span>
                   </div>
 
                   <div className="timeline-connector-col">
@@ -95,18 +125,20 @@ const Exam = () => {
 
                   <div className="timeline-detail-card card">
                     <div className="exam-card-header">
-                      <span className="exam-type-pill">{exam.type}</span>
-                      <span className="exam-time-lbl"><Clock size={12} /> {exam.time}</span>
+                      <span className="exam-type-pill">{exam.title}</span>
+                      <span className="exam-time-lbl"><Clock size={12} /> {new Date(exam.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     
                     <h3 className="exam-subject-heading">{exam.subject}</h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Total Marks: {exam.totalMarks}</p>
                     
                     <button 
                       className="btn btn-outline btn-sm exam-syllabus-btn"
+                      style={{ marginTop: '12px' }}
                       onClick={() => setSelectedSyllabus(exam)}
                     >
                       <BookOpen size={14} />
-                      <span>View Syllabus Outline</span>
+                      <span>View Details</span>
                     </button>
                   </div>
                 </div>
@@ -152,22 +184,24 @@ const Exam = () => {
               <BookOpen className="text-accent" size={22} />
               <span>Syllabus: {selectedSyllabus.subject}</span>
             </h3>
-            <p className="modal-subheading-text">Syllabus details for {selectedSyllabus.type} &bull; English Zone Academics</p>
+            <p className="modal-subheading-text">Syllabus details for {selectedSyllabus.title} &bull; English Zone Academics</p>
             
             <div className="syllabus-topics-box">
-              <h4 className="syllabus-topics-heading">Prescribed Units & Topics</h4>
+              <h4 className="syllabus-topics-heading">Details</h4>
               <ul className="syllabus-topics-list">
-                {selectedSyllabus.syllabus.split(', ').map((topic, index) => (
-                  <li key={index} className="topic-bullet-item">
-                    <span className="bullet-dot"></span>
-                    <span>{topic}</span>
-                  </li>
-                ))}
+                <li className="topic-bullet-item">
+                  <span className="bullet-dot"></span>
+                  <span>Date: {new Date(selectedSyllabus.date).toLocaleString()}</span>
+                </li>
+                <li className="topic-bullet-item">
+                  <span className="bullet-dot"></span>
+                  <span>Max Marks: {selectedSyllabus.totalMarks}</span>
+                </li>
               </ul>
               
               <div className="syllabus-warning-box">
                 <AlertCircle className="text-primary" size={18} />
-                <p>Ensure to solve NCERT back exercises for these chapters. 40% weighting applies to practicals.</p>
+                <p>Ensure to arrive 15 minutes before the exam starts.</p>
               </div>
             </div>
 

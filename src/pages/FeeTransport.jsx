@@ -1,40 +1,46 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../context/AppContext';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '../hooks/useApi';
 import StatusBadge from '../components/StatusBadge';
-import { Landmark, Bus, Plus, Send, ShieldCheck, DollarSign, Calendar, IndianRupee, FileText, X } from 'lucide-react';
+import { Landmark, Bus, Plus, Send, ShieldCheck, DollarSign, Calendar, IndianRupee, FileText, X, Loader2 } from 'lucide-react';
 import './FeeTransport.css';
 
 const FeeTransport = ({ defaultView = 'fees' }) => {
-  const { invoices, addInvoice, updateInvoiceStatus } = useContext(AppContext);
+  const { request, loading } = useApi();
+  const [invoices, setInvoices] = useState([]);
   const [viewTab, setViewTab] = useState(defaultView); // 'fees' or 'transport'
-  const [showInvoiceGenerator, setShowInvoiceGenerator] = useState(false);
-  
-  // Invoice form state
-  const [desc, setDesc] = useState('');
-  const [amt, setAmt] = useState('');
-  const [transFee, setTransFee] = useState('800');
-  const [invStatus, setInvStatus] = useState('Pending');
   
   // Simulated invoice review
   const [activeReceipt, setActiveReceipt] = useState(null);
+  
+  // Simulated payment gateway state
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
-  const handleCreateInvoice = (e) => {
-    e.preventDefault();
-    if (!desc || !amt) {
-      alert('Please fill in Description and Tuition Amount');
-      return;
+  const [transitBus, setTransitBus] = useState(null);
+
+  const fetchInvoices = async () => {
+    try {
+      const data = await request('/invoices', 'GET');
+      setInvoices(data);
+    } catch (err) {
+      console.error('Failed to fetch invoices', err);
     }
-    
-    addInvoice(desc, amt, transFee, invStatus);
-    
-    // Clear state
-    setDesc('');
-    setAmt('');
-    setTransFee('800');
-    setInvStatus('Pending');
-    setShowInvoiceGenerator(false);
-    alert('Administrative Invoice Generated Successfully!\nIt has been posted to the Student Portal.');
   };
+
+  const fetchTransit = async () => {
+    try {
+      const transitData = await request('/transit', 'GET');
+      if (transitData && transitData.length > 0) {
+        setTransitBus(transitData[0]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch transit info', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchInvoices();
+    fetchTransit();
+  }, []);
 
   const calculateTotals = () => {
     let pending = 0;
@@ -42,7 +48,7 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
     let paid = 0;
     
     invoices.forEach(inv => {
-      const total = inv.amount + inv.transportFee;
+      const total = inv.amount;
       if (inv.status === 'Pending') pending += total;
       else if (inv.status === 'Overdue') overdue += total;
       else if (inv.status === 'Paid') paid += total;
@@ -53,27 +59,29 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
 
   const totals = calculateTotals();
 
-  const handlePayInvoiceSimulate = (id) => {
-    updateInvoiceStatus(id, 'Paid');
-    alert(`Payment Simulation Successful!\nInvoice ${id} has been marked as PAID.\nReceipt generated.`);
+  const handlePayInvoice = async (id) => {
+    setIsProcessingPayment(true);
+    // Simulate secure payment gateway redirect and processing time
+    setTimeout(async () => {
+      try {
+        await request(`/invoices/${id}/pay`, 'PUT');
+        fetchInvoices();
+        setIsProcessingPayment(false);
+        alert(`Payment Successful!\nInvoice ${id} has been securely processed and marked as PAID.\nReceipt generated.`);
+        setActiveReceipt(null);
+      } catch (err) {
+        console.error('Failed to mark as paid', err);
+        setIsProcessingPayment(false);
+      }
+    }, 2500);
   };
 
   return (
     <div className="billing-wrapper fade-in">
       <div className="billing-header-row">
         <div>
-          <h2 className="workspace-heading">Administrative Fees & Transport</h2>
+          <h2 className="workspace-heading">Fees & Transport</h2>
           <p className="workspace-subheading">Track bills, check transport integrations, and manage school invoices</p>
-        </div>
-
-        <div className="billing-quick-actions">
-          <button 
-            className="btn btn-accent btn-sm admin-console-btn"
-            onClick={() => setShowInvoiceGenerator(true)}
-          >
-            <Plus size={16} />
-            <span>Admin Console: Post Invoice</span>
-          </button>
         </div>
       </div>
 
@@ -84,7 +92,7 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
           onClick={() => setViewTab('fees')}
         >
           <Landmark size={18} />
-          <span>Tuition & billing Invoices</span>
+          <span>Tuition & Billing Invoices</span>
         </button>
         <button 
           className={`mode-tab-btn ${viewTab === 'transport' ? 'active' : ''}`}
@@ -101,17 +109,17 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
           <div className="balance-grid">
             <div className="balance-card pending-card">
               <span className="bal-lbl">Pending Balance</span>
-              <h3 className="bal-amt text-warning">&#8377; {totals.pending}</h3>
+              <h3 className="bal-amt text-warning">&#8377; {totals.pending.toLocaleString()}</h3>
               <p className="bal-desc">Clear before due date</p>
             </div>
             <div className="balance-card overdue-card">
               <span className="bal-lbl">Overdue Balance</span>
-              <h3 className="bal-amt text-error">&#8377; {totals.overdue}</h3>
+              <h3 className="bal-amt text-error">&#8377; {totals.overdue.toLocaleString()}</h3>
               <p className="bal-desc">Subject to late fee bounds</p>
             </div>
             <div className="balance-card paid-card">
               <span className="bal-lbl">Cleared This Term</span>
-              <h3 className="bal-amt text-success">&#8377; {totals.paid}</h3>
+              <h3 className="bal-amt text-success">&#8377; {totals.paid.toLocaleString()}</h3>
               <p className="bal-desc">Receipts available</p>
             </div>
           </div>
@@ -123,32 +131,37 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
               <table className="billing-table">
                 <thead>
                   <tr>
-                    <th>Invoice ID</th>
-                    <th>Billing Month</th>
                     <th>Description</th>
-                    <th>Tuition Fee</th>
-                    <th>Transport Fee</th>
+                    <th>Due Date</th>
                     <th>Total Amount</th>
                     <th>Status</th>
                     <th className="actions-header">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {invoices.map((inv) => {
-                    const total = inv.amount + inv.transportFee;
+                  {loading && invoices.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: 'center', padding: '24px' }}>
+                        <Loader2 className="animate-spin text-primary" size={24} style={{ margin: '0 auto' }}/>
+                      </td>
+                    </tr>
+                  ) : invoices.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '24px' }}>
+                        You have no invoices.
+                      </td>
+                    </tr>
+                  ) : invoices.map((inv) => {
+                    const total = inv.amount;
                     return (
-                      <tr key={inv.id}>
-                        <td className="font-bold">{inv.id}</td>
-                        <td className="text-muted">{inv.dueDate.split('-').slice(0,2).join('/')}</td>
+                      <tr key={inv._id}>
                         <td>
                           <div className="inv-desc-col font-bold">
                             <span>{inv.description}</span>
-                            <span className="inv-type-pill-sub">{inv.type}</span>
                           </div>
                         </td>
-                        <td className="numeric-col">&#8377; {inv.amount}</td>
-                        <td className="numeric-col text-accent">&#8377; {inv.transportFee}</td>
-                        <td className="numeric-col font-bold text-primary">&#8377; {total}</td>
+                        <td className="text-muted">{new Date(inv.dueDate).toLocaleDateString()}</td>
+                        <td className="numeric-col font-bold text-primary">&#8377; {total.toLocaleString()}</td>
                         <td>
                           <StatusBadge status={inv.status} />
                         </td>
@@ -164,7 +177,7 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
                             {inv.status !== 'Paid' && (
                               <button 
                                 className="btn btn-accent btn-sm pay-invoice-btn"
-                                onClick={() => handlePayInvoiceSimulate(inv.id)}
+                                onClick={() => handlePayInvoice(inv._id)}
                               >
                                 Pay Now
                               </button>
@@ -193,19 +206,19 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
                 <div className="transit-grid-info">
                   <div className="transit-info-item">
                     <span className="tr-lbl">Route Designation</span>
-                    <span className="tr-val">Route 14 (Bengaluru South)</span>
+                    <span className="tr-val">{transitBus ? transitBus.route : 'Route 14 (Bengaluru South)'}</span>
                   </div>
                   <div className="transit-info-item">
                     <span className="tr-lbl">Bus Reg Number</span>
-                    <span className="tr-val">KA-51-EZ-8824</span>
+                    <span className="tr-val">{transitBus ? transitBus.busNumber : 'KA-51-EZ-8824'}</span>
                   </div>
                   <div className="transit-info-item">
                     <span className="tr-lbl">Driver Name</span>
-                    <span className="tr-val">Mr. Anthony D'Souza</span>
+                    <span className="tr-val">{transitBus ? transitBus.driverName : "Mr. Anthony D'Souza"}</span>
                   </div>
                   <div className="transit-info-item">
                     <span className="tr-lbl">Driver Phone</span>
-                    <span className="tr-val text-primary">+91 99887 76655</span>
+                    <span className="tr-val text-primary">{transitBus ? transitBus.driverPhone : '+91 99887 76655'}</span>
                   </div>
                   <div className="transit-info-item">
                     <span className="tr-lbl">Morning Pick-Up</span>
@@ -236,7 +249,7 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
             {/* Simulated Live Route Map Card */}
             <div className="dash-card transit-route-map-card">
               <h3 className="card-heading-title">Live Route Tracking</h3>
-              <p className="card-heading-desc">Real-time GPS tracking for Bus KA-51-EZ-8824</p>
+              <p className="card-heading-desc">Real-time GPS tracking for Bus {transitBus ? transitBus.busNumber : 'KA-51-EZ-8824'}</p>
               
               <div className="live-route-mock-map">
                 <div className="map-route-line"></div>
@@ -246,11 +259,11 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
                 </div>
                 <div className="map-stop active-bus-position">
                   <Bus size={18} className="bus-gps-icon animate-pulse-slow" />
-                  <span className="stop-name">Bus 24 (In Transit)</span>
+                  <span className="stop-name">{transitBus ? transitBus.route : 'Bus 24 (In Transit)'}</span>
                 </div>
                 <div className="map-stop end-stop">
                   <span className="stop-marker"></span>
-                  <span className="stop-name">HSR Layout</span>
+                  <span className="stop-name">End Terminal</span>
                 </div>
               </div>
               
@@ -263,79 +276,22 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
         </div>
       )}
 
-      {/* Admin Panel Invoice Poster Modal */}
-      {showInvoiceGenerator && (
-        <div className="modal-overlay fade-in">
-          <div className="modal-content scale-up">
-            <button className="modal-close" onClick={() => setShowInvoiceGenerator(false)}>&times;</button>
-            <h3 className="modal-heading-text flex-align-center gap-8">
-              <Landmark className="text-accent" size={22} />
-              <span>Admin Console: Post New Invoice</span>
-            </h3>
-            <p className="modal-subheading-text">Simulated administrative tool to create student fee invoices.</p>
-
-            <form onSubmit={handleCreateInvoice} className="apply-form">
-              <div className="form-group">
-                <label className="form-label" htmlFor="descriptionInput">Invoice Description</label>
-                <input 
-                  id="descriptionInput"
-                  type="text" 
-                  className="form-control" 
-                  required 
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                  placeholder="e.g. July Tuition Fee, Term I Library Fee" 
-                />
+      {/* Payment Gateway Processing Overlay */}
+      {isProcessingPayment && (
+        <div className="modal-overlay fade-in" style={{ zIndex: 9999 }}>
+          <div className="modal-content scale-up" style={{ maxWidth: '400px', textAlign: 'center', padding: '40px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div className="avatar-frame-large" style={{ margin: '0 auto', borderColor: 'var(--success-color)', padding: '10px' }}>
+                <Landmark size={40} className="text-success animate-pulse-slow" />
               </div>
-
-              <div className="form-row">
-                <div className="form-group flex-1">
-                  <label className="form-label" htmlFor="tuitionAmountInput">Tuition Fee (&#8377;)</label>
-                  <input 
-                    id="tuitionAmountInput"
-                    type="number" 
-                    className="form-control" 
-                    required 
-                    min="0"
-                    value={amt}
-                    onChange={(e) => setAmt(e.target.value)}
-                    placeholder="2500" 
-                  />
-                </div>
-                <div className="form-group flex-1">
-                  <label className="form-label" htmlFor="transportFeeInput">Transport Fee (&#8377;)</label>
-                  <input 
-                    id="transportFeeInput"
-                    type="number" 
-                    className="form-control" 
-                    required 
-                    min="0"
-                    value={transFee}
-                    onChange={(e) => setTransFee(e.target.value)}
-                    placeholder="800" 
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label" htmlFor="invoiceStatusSelect">Initial Invoice Status</label>
-                <select 
-                  id="invoiceStatusSelect"
-                  className="form-control"
-                  value={invStatus}
-                  onChange={(e) => setInvStatus(e.target.value)}
-                >
-                  <option value="Pending">Pending (Unpaid)</option>
-                  <option value="Paid">Paid</option>
-                  <option value="Overdue">Overdue (Delayed)</option>
-                </select>
-              </div>
-
-              <button type="submit" className="btn btn-primary w-full apply-submit-btn" style={{ marginTop: '8px' }}>
-                <Send size={16} />
-                <span>Post Invoice to Portal</span>
-              </button>
-            </form>
+            </div>
+            <h3 style={{ fontSize: '1.4rem', marginBottom: '8px' }}>Secure Payment Gateway</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '24px' }}>
+              Redirecting to banking partner and processing your transaction securely. Please do not refresh or close this window.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Loader2 className="animate-spin text-primary" size={32} />
+            </div>
           </div>
         </div>
       )}
@@ -356,15 +312,15 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
               <div className="receipt-meta-grid">
                 <div>
                   <span className="lbl">Invoice Number</span>
-                  <span className="val">{activeReceipt.id}</span>
+                  <span className="val">{activeReceipt._id}</span>
                 </div>
                 <div>
                   <span className="lbl">Date of Generation</span>
-                  <span className="val">{activeReceipt.date}</span>
+                  <span className="val">{new Date(activeReceipt.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div>
                   <span className="lbl">Payment Due Date</span>
-                  <span className="val">{activeReceipt.dueDate}</span>
+                  <span className="val">{new Date(activeReceipt.dueDate).toLocaleDateString()}</span>
                 </div>
                 <div>
                   <span className="lbl">Invoice Status</span>
@@ -380,17 +336,13 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
                   <span>Amount (INR)</span>
                 </div>
                 <div className="r-item-row">
-                  <span>Tuition & Lecture Facilities ({activeReceipt.description})</span>
-                  <span>&#8377; {activeReceipt.amount}.00</span>
-                </div>
-                <div className="r-item-row">
-                  <span>School Transport Services (Route 14 Bus)</span>
-                  <span>&#8377; {activeReceipt.transportFee}.00</span>
+                  <span>{activeReceipt.description}</span>
+                  <span>&#8377; {activeReceipt.amount.toLocaleString()}</span>
                 </div>
                 <div className="receipt-divider"></div>
                 <div className="r-total-row">
                   <span>Total Amount Due</span>
-                  <span>&#8377; {activeReceipt.amount + activeReceipt.transportFee}.00</span>
+                  <span>&#8377; {activeReceipt.amount.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -405,7 +357,7 @@ const FeeTransport = ({ defaultView = 'fees' }) => {
               {activeReceipt.status !== 'Paid' && (
                 <button 
                   className="btn btn-accent w-full"
-                  onClick={() => { handlePayInvoiceSimulate(activeReceipt.id); setActiveReceipt(null); }}
+                  onClick={() => handlePayInvoice(activeReceipt._id)}
                 >
                   Pay Invoice
                 </button>

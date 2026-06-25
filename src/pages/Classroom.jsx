@@ -1,12 +1,34 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../context/AppContext';
-import { Video, Download, Eye, FileText, Play, X, BookOpen, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '../hooks/useApi';
+import { Video, Download, Eye, FileText, Play, BookOpen, AlertCircle, Loader2 } from 'lucide-react';
 import './Classroom.css';
 
 const Classroom = () => {
-  const { lectures, ncertResources } = useContext(AppContext);
+  const { request, loading } = useApi();
+  const [lectures, setLectures] = useState([]);
   const [activeLectureVideo, setActiveLectureVideo] = useState(null);
   const [viewingPdf, setViewingPdf] = useState(null);
+
+  // Mocked NCERT resources for now since they are static
+  const ncertResources = [
+    { id: 1, title: 'First Flight - Prose', subject: 'English Lit', size: '2.4 MB' },
+    { id: 2, title: 'Footprints Without Feet', subject: 'English Suppl.', size: '1.8 MB' },
+    { id: 3, title: 'Words and Expressions II', subject: 'Grammar', size: '3.1 MB' }
+  ];
+
+  const fetchAssignments = async () => {
+    try {
+      // Assuming the student's classId is implicitly handled or we just fetch all available for their class
+      const data = await request('/assignments', 'GET');
+      setLectures(data);
+    } catch (err) {
+      console.error('Failed to fetch assignments', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
 
   const handleDownloadNotes = (notesName) => {
     alert(`Downloading lecture notes: ${notesName}\nFormat: PDF\nSize: 1.4 MB`);
@@ -14,6 +36,14 @@ const Classroom = () => {
 
   const handleDownloadPdf = (pdfName) => {
     alert(`Downloading NCERT textbook: ${pdfName}\nSaving for offline use.`);
+  };
+
+  const handleOpenLecture = (lecture) => {
+    if (lecture.type === 'Video') {
+      setActiveLectureVideo(lecture);
+    } else {
+      setViewingPdf({ title: lecture.title, link: lecture.link });
+    }
   };
 
   return (
@@ -32,36 +62,31 @@ const Classroom = () => {
           </h3>
           
           <div className="lectures-list">
-            {lectures.map((lecture) => (
-              <div key={lecture.id} className="lecture-card-item">
+            {loading && lectures.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px' }}>
+                <Loader2 className="animate-spin text-primary" size={24} style={{ margin: '0 auto' }}/>
+              </div>
+            ) : lectures.length === 0 ? (
+              <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>No lectures available yet.</p>
+            ) : lectures.map((lecture) => (
+              <div key={lecture._id} className="lecture-card-item">
                 <div className="lecture-status-indicator">
-                  {lecture.isLive ? (
-                    <span className="badge-live animate-pulse-slow">LIVE NOW</span>
-                  ) : (
-                    <span className="badge-recorded">RECORDED</span>
-                  )}
-                  <span className="lecture-time-txt">{lecture.time}</span>
+                  <span className="badge-recorded">{lecture.type.toUpperCase()}</span>
+                  <span className="lecture-time-txt">{new Date(lecture.createdAt).toLocaleDateString()}</span>
                 </div>
                 
                 <div className="lecture-body-info">
                   <h4 className="lecture-title-name">{lecture.title}</h4>
-                  <p className="lecture-meta-sub">Faculty: <strong>{lecture.teacher}</strong> &bull; Duration: {lecture.duration}</p>
+                  <p className="lecture-meta-sub">Faculty: <strong>{lecture.teacherId?.fullName || 'Unknown'}</strong></p>
                 </div>
 
                 <div className="lecture-actions-row">
                   <button 
                     className="btn btn-primary btn-sm play-lecture-btn"
-                    onClick={() => setActiveLectureVideo(lecture)}
+                    onClick={() => handleOpenLecture(lecture)}
                   >
-                    <Play size={14} fill="white" />
-                    <span>Watch Class</span>
-                  </button>
-                  <button 
-                    className="btn btn-outline btn-sm notes-download-btn"
-                    onClick={() => handleDownloadNotes(lecture.notesName)}
-                  >
-                    <Download size={14} />
-                    <span>Download Notes</span>
+                    {lecture.type === 'Video' ? <Play size={14} fill="white" /> : <FileText size={14} />}
+                    <span>{lecture.type === 'Video' ? 'Watch Class' : 'View Notes'}</span>
                   </button>
                 </div>
               </div>
@@ -118,7 +143,7 @@ const Classroom = () => {
           <div className="modal-content video-modal-width scale-up">
             <button className="modal-close" onClick={() => setActiveLectureVideo(null)}>&times;</button>
             <h3 className="modal-heading-text">{activeLectureVideo.title}</h3>
-            <p className="modal-subheading-text">Faculty: {activeLectureVideo.teacher} &bull; English Zone Streaming Portal</p>
+            <p className="modal-subheading-text">Faculty: {activeLectureVideo.teacherId?.fullName} &bull; Link: {activeLectureVideo.link}</p>
             
             <div className="video-player-container-mock">
               <div className="video-overlay-inner-icon">
@@ -129,13 +154,6 @@ const Classroom = () => {
 
             <div className="video-notes-row">
               <span className="live-viewers-count">104 students watching online</span>
-              <button 
-                className="btn btn-accent btn-sm"
-                onClick={() => handleDownloadNotes(activeLectureVideo.notesName)}
-              >
-                <Download size={14} />
-                <span>Grab Today's Notes</span>
-              </button>
             </div>
           </div>
         </div>
@@ -150,14 +168,14 @@ const Classroom = () => {
               <FileText className="text-accent" size={22} />
               <span>{viewingPdf.title}</span>
             </h3>
-            <p className="modal-subheading-text">Simulated Digital PDF Viewer &bull; English Zone Resource Center</p>
+            <p className="modal-subheading-text">Simulated Digital PDF Viewer &bull; {viewingPdf.link ? `Link: ${viewingPdf.link}` : 'English Zone Resource Center'}</p>
             
             <div className="pdf-viewer-container-mock">
               <div className="pdf-viewer-content">
                 <BookOpen size={40} className="text-muted" />
                 <h4>NCERT Digital Reader Content</h4>
-                <p>Grade 10 supplementary reading chapters loading...</p>
-                <div className="pdf-page-indicator">Page 1 of 184</div>
+                <p>Loading document content...</p>
+                <div className="pdf-page-indicator">Page 1</div>
               </div>
             </div>
 

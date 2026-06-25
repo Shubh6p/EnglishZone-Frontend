@@ -1,38 +1,82 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../context/AppContext';
-import { BookOpen, Video, FileText, Upload, Plus, Download, ExternalLink, Sparkles, GraduationCap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '../hooks/useApi';
+import { BookOpen, Video, FileText, Upload, Plus, Download, ExternalLink, Sparkles, GraduationCap, Loader2 } from 'lucide-react';
 import './TeacherResources.css';
 
 const TeacherResources = () => {
-  const { teacherResources, uploadTeacherResource, ncertResources } = useContext(AppContext);
+  const { request, loading } = useApi();
+  const [teacherResources, setTeacherResources] = useState([]);
+  const [classes, setClasses] = useState([]);
+  
+  // Mocked NCERT resources for now since they are static
+  const ncertResources = [
+    { id: 1, title: 'First Flight - Prose', subject: 'English Lit', size: '2.4 MB' },
+    { id: 2, title: 'Footprints Without Feet', subject: 'English Suppl.', size: '1.8 MB' },
+    { id: 3, title: 'Words and Expressions II', subject: 'Grammar', size: '3.1 MB' }
+  ];
 
   // Form states
   const [title, setTitle] = useState('');
   const [type, setType] = useState('Video');
   const [link, setLink] = useState('');
-  const [targetClass, setTargetClass] = useState('Grade 10-A');
+  const [file, setFile] = useState(null);
+  const [targetClassId, setTargetClassId] = useState('');
   const [showToast, setShowToast] = useState(false);
 
-  const handleSubmit = (e) => {
+  const fetchData = async () => {
+    try {
+      const [resData, classData] = await Promise.all([
+        request('/assignments', 'GET'),
+        request('/academics/classes', 'GET')
+      ]);
+      setTeacherResources(resData);
+      setClasses(classData);
+      if (classData.length > 0) setTargetClassId(classData[0]._id);
+    } catch (err) {
+      console.error('Failed to fetch data', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title || !link) return;
+    if (!title || !targetClassId) return;
+    if (type === 'Video' && !link) return;
+    if (type === 'PDF Notes' && !file) return;
 
-    uploadTeacherResource({
-      title,
-      type,
-      link,
-      targetClass
-    });
+    try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('type', type);
+      formData.append('classId', targetClassId);
+      
+      if (type === 'Video') {
+        formData.append('link', link);
+      } else if (type === 'PDF Notes' && file) {
+        formData.append('file', file);
+      }
 
-    // Reset Form
-    setTitle('');
-    setLink('');
-    
-    // Toast notification
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3500);
+      await request('/assignments', 'POST', formData, true); // true for isFormData
+
+      // Refresh list
+      fetchData();
+
+      // Reset Form
+      setTitle('');
+      setLink('');
+      setFile(null);
+      
+      // Toast notification
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3500);
+    } catch (err) {
+      console.error('Failed to upload resource', err);
+    }
   };
 
   const handleOpenLink = (item) => {
@@ -96,17 +140,29 @@ const TeacherResources = () => {
 
             <div className="form-group">
               <label className="form-label" htmlFor="resLink">
-                {type === 'Video' ? 'Video Youtube / Drive Link' : 'Notes File Name / Reference'}
+                {type === 'Video' ? 'Video Youtube / Drive Link' : 'Upload PDF Document'}
               </label>
-              <input
-                id="resLink"
-                type="text"
-                placeholder={type === 'Video' ? 'https://youtube.com/watch?...' : 'e.g. prepositions_notes_v1.pdf'}
-                className="form-control"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-                required
-              />
+              {type === 'Video' ? (
+                <input
+                  id="resLink"
+                  type="text"
+                  placeholder="https://youtube.com/watch?..."
+                  className="form-control"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  required
+                />
+              ) : (
+                <input
+                  id="resFile"
+                  type="file"
+                  accept="application/pdf"
+                  className="form-control"
+                  style={{ padding: '8px' }}
+                  onChange={(e) => setFile(e.target.files[0])}
+                  required
+                />
+              )}
             </div>
 
             <div className="form-group">
@@ -114,19 +170,18 @@ const TeacherResources = () => {
               <select
                 id="resClass"
                 className="form-control"
-                value={targetClass}
-                onChange={(e) => setTargetClass(e.target.value)}
+                value={targetClassId}
+                onChange={(e) => setTargetClassId(e.target.value)}
               >
-                <option value="Grade 10-A">Grade 10-A</option>
-                <option value="Grade 10-B">Grade 10-B</option>
-                <option value="Grade 9-A">Grade 9-A</option>
-                <option value="Grade 9-B">Grade 9-B</option>
+                {classes.map(cls => (
+                  <option key={cls._id} value={cls._id}>{cls.name}</option>
+                ))}
               </select>
             </div>
 
-            <button type="submit" className="btn btn-accent auth-btn" style={{ marginTop: '8px' }}>
-              <Plus size={16} />
-              <span>Publish Resource</span>
+            <button type="submit" className="btn btn-accent auth-btn" style={{ marginTop: '8px' }} disabled={loading}>
+              {loading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+              <span>{loading ? 'Publishing...' : 'Publish Resource'}</span>
             </button>
           </form>
         </div>
@@ -139,17 +194,19 @@ const TeacherResources = () => {
           </div>
 
           <div className="uploaded-resources-list">
-            {teacherResources.map((item) => (
-              <div key={item.id} className="resource-item-card">
+            {teacherResources.length === 0 ? (
+              <p style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>No resources uploaded yet.</p>
+            ) : teacherResources.map((item) => (
+              <div key={item._id} className="resource-item-card">
                 <div className="resource-details">
                   <span className={`resource-badge-tag ${item.type === 'Video' ? 'tag-video' : 'tag-pdf'}`}>
                     {item.type}
                   </span>
                   <h4 className="resource-title" style={{ marginTop: '4px' }}>{item.title}</h4>
                   <div className="resource-meta">
-                    <span>Target: <strong>{item.targetClass}</strong></span>
+                    <span>Target: <strong>{item.classId?.name || 'Unknown Class'}</strong></span>
                     <span>&bull;</span>
-                    <span>Uploaded: {item.uploadedAt}</span>
+                    <span>Uploaded: {new Date(item.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 

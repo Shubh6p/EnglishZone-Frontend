@@ -1,63 +1,66 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AppContext } from '../context/AppContext';
-import { GraduationCap, Mail, Lock, LogIn, ArrowRight, User, Users, ShieldCheck } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+import { useApi } from '../hooks/useApi';
+import { GraduationCap, Mail, Lock, LogIn, ArrowRight, User, Users, ShieldCheck, Loader2 } from 'lucide-react';
 import './Auth.css';
 
 const LoginPage = () => {
-  const { loginUser, mockCredentials, mockTeacherCredentials, mockAdminCredentials } = useContext(AppContext);
+  const { login } = useContext(AuthContext);
+  const { request, loading, error: apiError } = useApi();
   const navigate = useNavigate();
   
-  const [activeTab, setActiveTab] = useState('student'); // 'student', 'teacher', or 'admin'
-  const [emailOrPhone, setEmailOrPhone] = useState('');
+  const [activeTab, setActiveTab] = useState('STUDENT'); // 'STUDENT', 'TEACHER', 'ADMIN', or 'SUPERADMIN'
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [validationError, setValidationError] = useState('');
 
-  const handleSubmit = (e) => {
+  const error = validationError || apiError;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!emailOrPhone || !password) {
-      setError('Please fill in all fields.');
+    setValidationError('');
+    
+    if (!email || !password) {
+      setValidationError('Please fill in all fields.');
       return;
     }
     
-    const result = loginUser(emailOrPhone, password);
-    if (result.success) {
-      const savedUser = localStorage.getItem('ez_user');
-      const parsedUser = savedUser ? JSON.parse(savedUser) : null;
-      if (parsedUser && parsedUser.role === 'admin') {
-        navigate('/admin-dashboard');
-      } else if (parsedUser && parsedUser.role === 'teacher') {
-        navigate('/teacher-dashboard');
-      } else {
-        navigate('/dashboard');
-      }
-    } else {
-      setError(result.message);
-    }
-  };
+    try {
+      const result = await request('/auth/login', 'POST', {
+        email,
+        password,
+        role: activeTab
+      });
 
-  const handleQuickLogin = () => {
-    let creds = mockCredentials;
-    if (activeTab === 'teacher') creds = mockTeacherCredentials;
-    if (activeTab === 'admin') creds = mockAdminCredentials;
-    
-    setEmailOrPhone(creds.email);
-    setPassword(creds.password);
-    setError('');
-    
-    // Slight timeout for visual feedback of typing, then log in
-    setTimeout(() => {
-      const result = loginUser(creds.email, creds.password);
-      if (result.success) {
-        if (activeTab === 'admin') {
+      if (result.token && result.user) {
+        login(result.user, result.token);
+        
+        if (result.user.role === 'SUPERADMIN') {
+          navigate('/superadmin-dashboard');
+        } else if (result.user.role === 'ADMIN') {
           navigate('/admin-dashboard');
-        } else if (activeTab === 'teacher') {
+        } else if (result.user.role === 'TEACHER') {
           navigate('/teacher-dashboard');
         } else {
           navigate('/dashboard');
         }
       }
-    }, 450);
+    } catch (err) {
+      // Error is handled by useApi and displayed via apiError
+    }
+  };
+
+  const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+
+  const handleQuickLogin = () => {
+    // This is only for development/demo
+    setEmail(
+      activeTab === 'STUDENT' ? 'student@englishzone.com' :
+      activeTab === 'TEACHER' ? 'teacher@englishzone.com' :
+      activeTab === 'SUPERADMIN' ? 'superadmin@englishzone.com' : 'admin@englishzone.com'
+    );
+    setPassword('password123');
   };
 
   return (
@@ -69,14 +72,16 @@ const LoginPage = () => {
             <span className="brand-name">English Zone</span>
           </Link>
           <h2 className="auth-title">
-            {activeTab === 'student' && 'Student Login'}
-            {activeTab === 'teacher' && 'Teacher Portal Login'}
-            {activeTab === 'admin' && 'Admin Command Center'}
+            {activeTab === 'STUDENT' && 'Student Login'}
+            {activeTab === 'TEACHER' && 'Teacher Portal Login'}
+            {activeTab === 'ADMIN' && 'Admin Command Center'}
+            {activeTab === 'SUPERADMIN' && 'Superadmin Interface'}
           </h2>
           <p className="auth-subtitle">
-            {activeTab === 'student' && 'Log in to access your dashboard, lectures, and fees'}
-            {activeTab === 'teacher' && 'Log in to access your schedule, class gradebook, and payroll'}
-            {activeTab === 'admin' && 'Log in with Master ID to manage institutions, users, and billing'}
+            {activeTab === 'STUDENT' && 'Log in to access your dashboard, lectures, and fees'}
+            {activeTab === 'TEACHER' && 'Log in to access your schedule, class gradebook, and payroll'}
+            {activeTab === 'ADMIN' && 'Log in with Master ID to manage institutions, users, and billing'}
+            {activeTab === 'SUPERADMIN' && 'Log in to manage system configurations and audit logs'}
           </p>
         </div>
 
@@ -84,8 +89,8 @@ const LoginPage = () => {
         <div className="role-tabs">
           <button 
             type="button" 
-            className={`role-tab ${activeTab === 'student' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('student'); setEmailOrPhone(''); setPassword(''); setError(''); }}
+            className={`role-tab ${activeTab === 'STUDENT' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('STUDENT'); setEmail(''); setPassword(''); setValidationError(''); }}
             style={{ fontSize: '0.8rem', padding: '8px' }}
           >
             <User size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
@@ -93,8 +98,8 @@ const LoginPage = () => {
           </button>
           <button 
             type="button" 
-            className={`role-tab ${activeTab === 'teacher' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('teacher'); setEmailOrPhone(''); setPassword(''); setError(''); }}
+            className={`role-tab ${activeTab === 'TEACHER' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('TEACHER'); setEmail(''); setPassword(''); setValidationError(''); }}
             style={{ fontSize: '0.8rem', padding: '8px' }}
           >
             <Users size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
@@ -102,12 +107,21 @@ const LoginPage = () => {
           </button>
           <button 
             type="button" 
-            className={`role-tab ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={() => { setActiveTab('admin'); setEmailOrPhone(''); setPassword(''); setError(''); }}
+            className={`role-tab ${activeTab === 'ADMIN' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('ADMIN'); setEmail(''); setPassword(''); setValidationError(''); }}
             style={{ fontSize: '0.8rem', padding: '8px' }}
           >
             <ShieldCheck size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
             Admin
+          </button>
+          <button 
+            type="button" 
+            className={`role-tab ${activeTab === 'SUPERADMIN' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('SUPERADMIN'); setEmail(''); setPassword(''); setValidationError(''); }}
+            style={{ fontSize: '0.8rem', padding: '8px' }}
+          >
+            <ShieldCheck size={12} style={{ marginRight: '4px', verticalAlign: 'middle', color: 'var(--accent-color)' }} />
+            Superadmin
           </button>
         </div>
 
@@ -115,23 +129,25 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label className="form-label" htmlFor="emailOrPhone">Email or Master ID</label>
+            <label className="form-label" htmlFor="email">Email</label>
             <div className="input-with-icon">
               <Mail className="input-field-icon" size={18} />
               <input
-                id="emailOrPhone"
-                type="text"
+                id="email"
+                type="email"
                 placeholder={
-                  activeTab === 'student' 
+                  activeTab === 'STUDENT' 
                     ? 'student@englishzone.com' 
-                    : activeTab === 'teacher' 
+                    : activeTab === 'TEACHER' 
                       ? 'teacher@englishzone.com' 
-                      : 'admin@englishzone.com'
+                      : activeTab === 'SUPERADMIN'
+                        ? 'superadmin@englishzone.com'
+                        : 'admin@englishzone.com'
                 }
                 className="form-control auth-input"
                 required
-                value={emailOrPhone}
-                onChange={(e) => setEmailOrPhone(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
@@ -152,26 +168,32 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-accent w-full auth-btn">
-            <LogIn size={18} />
-            <span>Login Portal</span>
+          <div className="auth-forgot-password" style={{ textAlign: 'right', marginBottom: '15px' }}>
+            <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--primary-color)' }}>Forgot Password?</Link>
+          </div>
+
+          <button type="submit" className="btn btn-accent w-full auth-btn" disabled={loading}>
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
+            <span>{loading ? 'Logging in...' : 'Login Portal'}</span>
           </button>
         </form>
 
-        <div className="demo-credentials-box">
-          <p className="demo-title">Quick Demo Login</p>
-          <p className="demo-info">
-            Use the button below to auto-fill mock {activeTab} credentials and log in instantly.
-          </p>
-          <button 
-            type="button" 
-            className="btn btn-outline w-full demo-login-btn"
-            onClick={handleQuickLogin}
-          >
-            <span>Autofill & Login</span>
-            <ArrowRight size={16} />
-          </button>
-        </div>
+        {isDemoMode && (
+          <div className="demo-credentials-box">
+            <p className="demo-title">Quick Demo Login</p>
+            <p className="demo-info">
+              Use the button below to auto-fill mock {activeTab} credentials.
+            </p>
+            <button 
+              type="button" 
+              className="btn btn-outline w-full demo-login-btn"
+              onClick={handleQuickLogin}
+            >
+              <span>Autofill Credentials</span>
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        )}
 
         <div className="auth-footer">
           <p>Don't have an account? <Link to="/signup" className="auth-link">Sign up here</Link></p>
