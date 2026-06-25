@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
+import appConfig from '../config';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+// Automatically append the API route prefix so the developer only has to configure the root domain
+const BASE_URL = `${appConfig.BACKEND_DOMAIN}/api/v1`;
 
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
